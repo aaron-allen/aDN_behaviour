@@ -10,9 +10,10 @@ output: html_notebook
 
 # **Setup**
 
-```{r}
+```{r message=FALSE}
 library("tidyverse")
 library("ggpubr")
+library("zoo")
 setwd("/mnt/LocalData/behaviour/aDN/aDN_behaviour")
 ```
 
@@ -32,8 +33,8 @@ gg_color_hue(2)
 
 
 
-```{r}
-genotypes <- read_tsv("raw data/genotype.tsv",col_names = TRUE)
+```{r message=FALSE}
+genotypes <- read_tsv("../2019_03_06_Courtship/genotype.tsv",col_names = TRUE)
 genotypes
 ```
 
@@ -43,7 +44,7 @@ genotypes
 
 
 
-```{r message=FALSE, echo=FALSE}
+```{r message=FALSE}
 # indices_list <- list.files("raw data/") %>% str_subset("_Indices.csv")
 indices_list <- list.files("../2019_03_06_Courtship/",recursive = TRUE) %>% str_subset("_Indices.csv") %>% str_subset("Male")
 all_indices <- tibble()
@@ -54,24 +55,25 @@ for (indices_file in indices_list) {
     mutate(video = video_name)
   all_indices <- bind_rows(all_indices,temp)
 }
+all_indices
 ```
 
 
 
 
-```{r}
+```{r message=FALSE}
 all_male_indices <- left_join(x = genotypes,y = all_indices,by=c("video"="video","fly_id"="FlyId"))
 ```
 
 
-```{r}
+```{r message=FALSE}
 ggplot(all_male_indices,aes(x=genotype,y=CourtshipIndexWithFacing)) + 
   geom_boxplot()
 ```
 
 
 
-```{r fig.width=12, fig.height=3}
+```{r message=FALSE, fig.width=12, fig.height=3}
 p1 <- ggplot(all_male_indices,aes(x=genotype,y=CourtshipIndex)) + 
   geom_boxplot()
 p2 <- ggplot(all_male_indices,aes(x=genotype,y=CourtshipIndexWithFacing)) + 
@@ -95,7 +97,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r fig.width=12, fig.height=8}
+```{r message=FALSE, fig.width=12, fig.height=8}
 p1 <- ggplot(all_male_indices,aes(x=genotype,y=ApproachingIndex)) + 
   geom_boxplot()
 p2 <- ggplot(all_male_indices,aes(x=genotype,y=ContactIndex)) + 
@@ -125,7 +127,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 
 
-```{r fig.width=10, fig.height=6}
+```{r message=FALSE, fig.width=10, fig.height=4}
 p1 <- ggplot(all_male_indices,aes(x=genotype,y=CourtshipInitiation)) + 
   geom_boxplot()
 p2 <- ggplot(all_male_indices,aes(x=genotype,y=CourtshipTermination)) + 
@@ -139,7 +141,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r}
+```{r message=FALSE}
 df <- all_male_indices %>%
   select(genotype,CourtshipTermination) %>% 
   group_by(genotype) %>% 
@@ -150,7 +152,7 @@ ggplot(df,aes(x=CourtshipTermination,color=genotype)) + geom_step(aes(y=..y..),s
 
 
 
-```{r}
+```{r message=FALSE}
 df <- all_male_indices %>%
   select(genotype,CourtshipDuration) %>% 
   group_by(genotype) %>% 
@@ -161,7 +163,7 @@ ggplot(df,aes(x=CourtshipDuration,color=genotype)) + geom_step(aes(y=..y..),stat
 
 
 
-```{r fig.width=16, fig.height=8}
+```{r message=FALSE, warning=FALSE, fig.width=16, fig.height=8}
 p1 <- ggplot(all_male_indices,aes(x=genotype,y=ApproachingBoutLength)) + 
   geom_boxplot()
 p2 <- ggplot(all_male_indices,aes(x=genotype,y=ContactBoutLength)) + 
@@ -219,11 +221,10 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6,
 
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE}
-rawdata_list <- list.files("raw data/") %>% str_subset("_ALLDATA.csv")
+rawdata_list <- list.files("../",recursive = TRUE) %>% str_subset("_ALLDATA.csv") %>% str_subset("_Male_")
 all_rawdata <- tibble()
 for (rawdata_file in rawdata_list) {
-  video_name <- rawdata_file %>% str_subset("_ALLDATA.csv") %>% str_remove("_ALLDATA.csv")
-  temp <- read_csv(paste0("raw data/",rawdata_file))
+  temp <- read_csv(paste0("../",rawdata_file),progress = FALSE)
   all_rawdata <- bind_rows(all_rawdata,temp)
 }
 ```
@@ -231,12 +232,9 @@ for (rawdata_file in rawdata_list) {
 
 
 ```{r message=FALSE}
-all_rawdata <- full_join(x = all_rawdata, y = genotypes, by = c("video"="video","Id"="fly_id"))
-all_rawdata <- all_rawdata %>% 
+all_rawdata <- all_rawdata %>%
+  full_join(x = all_rawdata, y = genotypes, by = c("FileName"="video","Id"="fly_id")) %>% 
   replace_na(list(genotype = "CS female"))
-sum(is.na(all_rawdata$genotype))
-summary(all_rawdata$genotype)
-unique(all_rawdata$genotype)
 all_rawdata
 ```
 
@@ -244,14 +242,6 @@ all_rawdata
 
 
 
-
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_rawdata %>% 
-  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
-  filter(Arena == 2) %>% 
-  ggplot(aes(x=Frame,y=max_wing_ang__rad, color=as_factor(Id))) +
-    geom_point()
-```
 
 
 
@@ -303,26 +293,14 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-test <- all_rawdata %>% 
-  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
-  filter(Arena == 2) %>% 
-  filter(Id == 3) %>% 
-  filter(dist_to_other__mm > 2) %>% 
-  filter(max_wing_ang__rad > (25*pi/180)) %>% 
-  select(Frame,wing_l_ang__rad,wing_r_ang__rad)
-test_plot <- ggplot(test) +
-  geom_density(aes(x=wing_l_ang__rad, colour = "#F8766D"),size = 2) +
-  geom_density(aes(x=wing_r_ang__rad, colour = "#00BFC4"),size = 2)
-test_plot
-```
+
 
 
 ```{r}
-# Extract density data to average
-p <- ggplot_build(test_plot)
-ggplot(as.data.frame(p$data[[1]]), aes(x,y)) + geom_line()
-ggplot(as.data.frame(p$data[[2]]), aes(x,y)) + geom_line()
+# # Extract density data to average
+# p <- ggplot_build(test_plot)
+# ggplot(as.data.frame(p$data[[1]]), aes(x,y)) + geom_line()
+# ggplot(as.data.frame(p$data[[2]]), aes(x,y)) + geom_line()
 ```
 
 
@@ -330,7 +308,7 @@ ggplot(as.data.frame(p$data[[2]]), aes(x,y)) + geom_line()
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -341,7 +319,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "B") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -352,7 +330,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "C") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -363,7 +341,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -377,8 +355,8 @@ all_male_rawdata %>%
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
-  filter(Arena == 2) %>% 
-  ggplot(aes(x=Frame,y=angle_between__rad, color=as_factor(Id))) +
+  filter(Id == 3) %>% 
+  ggplot(aes(x=Frame,y=angle_between__rad)) +
     geom_point()
 ```
 
@@ -407,7 +385,7 @@ all_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -420,7 +398,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -436,7 +414,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -449,7 +427,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -561,26 +539,6 @@ all_rawdata <- all_rawdata %>%
 )
 ```
 
-```{r}
-all_rawdata <- all_rawdata %>%
-  ungroup() %>% 
-  select(-unique_fly) %>% 
-  unite("unique_fly",FileName,Id, remove = FALSE) %>% 
-  group_by(unique_fly)
-```
-
-```{r}
-all_rawdata <- all_rawdata %>%
-  group_by(unique_fly) %>% 
-  mutate(
-    SmoothedDistToOther = ifelse((rollmean(ifelse(dist_to_other__mm > 2, 1, 0), 250, fill = c(1,1,NA), align = c("center")))>0.5, 1, 0)
-    )
-```
-
-
-
-
-
 
 
 
@@ -652,13 +610,8 @@ all_rawdata %>%
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
-  summarise(which.min(SmoothedDistToOther))
-```
-
-
-
-```{r}
-which.min(all_rawdata$SmoothedDistToOther)
+  summarise(which.min(SmoothedDistToOther),
+            which.max(SmoothedCopulation))
 ```
 
 
@@ -709,6 +662,13 @@ all_rawdata %>%
 
 
 
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 3) %>% 
+  summarise(which.min(SmoothedDistToOther),
+            which.max(SmoothedCopulation))
+```
 
 
 
@@ -805,7 +765,7 @@ all_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -822,7 +782,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -836,7 +796,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -864,7 +824,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -878,7 +838,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -922,7 +882,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -937,7 +897,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "B") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -952,7 +912,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "C") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -965,7 +925,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -979,7 +939,7 @@ all_male_rawdata %>%
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
-all_male_rawdata %>% 
+all_rawdata %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -990,8 +950,12 @@ all_male_rawdata %>%
 ```
 
 
+
+### mean distance to other
+
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1002,7 +966,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_dist_to_other)) +
     geom_boxplot() +
     ylim(0,10)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1013,7 +978,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_dist_to_other)) +
     geom_boxplot() +
     ylim(0,10)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad < (25*pi/180)) %>%
@@ -1033,8 +999,12 @@ ggarrange(plotlist = list(p1,p2,p3),
 ```
 
 
+
+### median distance to other
+
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1045,7 +1015,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_dist_to_other)) +
     geom_boxplot() +
     ylim(0,10)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1056,7 +1027,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_dist_to_other)) +
     geom_boxplot() +
     ylim(0,10)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad < (25*pi/180)) %>%
@@ -1082,11 +1054,12 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-
+### mean facing angle 
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1097,7 +1070,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1108,7 +1082,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad < (25*pi/180)) %>%
@@ -1138,12 +1113,13 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-
+### median facing angle
 
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   #filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1154,7 +1130,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1165,7 +1142,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad < (25*pi/180)) %>%
@@ -1189,11 +1167,12 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-
+### median facing angle by sector
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1205,7 +1184,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1217,7 +1197,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1229,7 +1210,8 @@ p3 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1241,7 +1223,8 @@ p4 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p5 <- all_male_rawdata %>% 
+p5 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1253,7 +1236,8 @@ p5 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=median_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p6 <- all_male_rawdata %>% 
+p6 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1275,10 +1259,11 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 
 
-
+### mean facing angle by sector
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1290,7 +1275,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1302,7 +1288,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad < pi/6) %>% 
@@ -1314,7 +1301,8 @@ p3 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi/6)
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1326,7 +1314,8 @@ p4 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p5 <- all_male_rawdata %>% 
+p5 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1338,7 +1327,8 @@ p5 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() +
     ylim(0,pi)
-p6 <- all_male_rawdata %>% 
+p6 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1360,16 +1350,13 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 
 
-```{r}
-min(all_male_rawdata$facing_angle__rad,na.rm = TRUE)
-max(all_male_rawdata$facing_angle__rad,na.rm = TRUE)
-```
 
 
-
+### mean facing angle by wee sectors
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 0) %>% 
@@ -1382,7 +1369,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1395,7 +1383,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 2*pi/6) %>% 
@@ -1408,7 +1397,8 @@ p3 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 3*pi/6) %>% 
@@ -1421,7 +1411,8 @@ p4 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() #+
     #ylim(0,pi)
-p5 <- all_male_rawdata %>% 
+p5 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 4*pi/6) %>% 
@@ -1434,7 +1425,8 @@ p5 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=mean_facing_angle)) +
     geom_boxplot() #+
     #ylim(0,pi)
-p6 <- all_male_rawdata %>% 
+p6 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 5*pi/6) %>% 
@@ -1467,10 +1459,11 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 
 
-
+### counts in wee sectors
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 0) %>% 
@@ -1483,7 +1476,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/6) %>% 
@@ -1496,7 +1490,8 @@ p2 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 2*pi/6) %>% 
@@ -1509,7 +1504,8 @@ p3 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 3*pi/6) %>% 
@@ -1522,7 +1518,8 @@ p4 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi)
-p5 <- all_male_rawdata %>% 
+p5 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 4*pi/6) %>% 
@@ -1535,7 +1532,8 @@ p5 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi)
-p6 <- all_male_rawdata %>% 
+p6 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 5*pi/6) %>% 
@@ -1563,7 +1561,8 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > 0) %>% 
@@ -1576,7 +1575,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(facing_angle__rad > pi/8) %>% 
@@ -1602,7 +1602,8 @@ ggarrange(plotlist = list(p1,p2),
 #### Proportion time in sector
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1613,7 +1614,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1636,7 +1638,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
   filter(genotype == "A") %>% 
@@ -1648,7 +1650,7 @@ p1 <- all_male_rawdata %>%
   coord_polar() +
   theme_void()
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
   filter(genotype == "B") %>% 
@@ -1660,7 +1662,7 @@ p2 <- all_male_rawdata %>%
   coord_polar() +
   theme_void()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
   filter(genotype == "C") %>% 
@@ -1672,7 +1674,7 @@ p3 <- all_male_rawdata %>%
   coord_polar() +
   theme_void()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
   filter(genotype == "D") %>% 
@@ -1696,7 +1698,8 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 #### Total time in sector
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1710,7 +1713,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1737,7 +1741,8 @@ ggarrange(plotlist = list(p1,p2),
 #### Proportion time in sector
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1749,7 +1754,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1778,7 +1784,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1791,7 +1797,7 @@ p1 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1804,7 +1810,7 @@ p2 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1817,7 +1823,7 @@ p3 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1842,7 +1848,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1855,7 +1861,7 @@ p1 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1868,7 +1874,7 @@ p2 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1881,7 +1887,7 @@ p3 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1905,7 +1911,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1918,7 +1924,7 @@ p1 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1931,7 +1937,7 @@ p2 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1944,7 +1950,7 @@ p3 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1972,7 +1978,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1985,7 +1991,7 @@ p1 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -1998,7 +2004,7 @@ p2 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2011,7 +2017,7 @@ p3 <- all_male_rawdata %>%
   theme_void() +
   coord_polar()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2058,7 +2064,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2072,7 +2078,7 @@ p1 <- all_male_rawdata %>%
   coord_polar()
   
 
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2085,7 +2091,7 @@ p2 <- all_male_rawdata %>%
   theme_grey() +
   coord_polar()
 
-p3 <- all_male_rawdata %>% 
+p3 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2098,7 +2104,7 @@ p3 <- all_male_rawdata %>%
   theme_grey() +
   coord_polar()
 
-p4 <- all_male_rawdata %>% 
+p4 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2123,7 +2129,8 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 #### Total count in inner ring
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(facing_angle__rad <= pi/8) %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -2136,7 +2143,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(facing_angle__rad <= pi/8) %>% 
   filter(dist_to_other__mm > 3) %>% 
@@ -2161,7 +2169,8 @@ ggarrange(plotlist = list(p1,p2),
 #### Proportion count in inner ring
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
-p1 <- all_male_rawdata %>% 
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(facing_angle__rad <= pi/8) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2172,7 +2181,8 @@ p1 <- all_male_rawdata %>%
   ggplot(aes(x=genotype, y=counts)) +
     geom_boxplot() #+
     #ylim(0,pi/6)
-p2 <- all_male_rawdata %>% 
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
   filter(facing_angle__rad <= pi/8) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
