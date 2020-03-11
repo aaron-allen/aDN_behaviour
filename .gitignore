@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+.RDataTmp
+all_rawdata.csv

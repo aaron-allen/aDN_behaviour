@@ -80,6 +80,19 @@ all_male_indices <- left_join(x = genotypes,y = all_indices,by=c("video"="video"
 
 
 
+
+```{r}
+all_male_indices %>% 
+  group_by(genotype) %>% 
+  summarise(n = length(genotype))
+```
+
+```{r}
+unique(all_male_indices$genotype)
+```
+
+
+
 <br/>
 <br/>
 
@@ -506,6 +519,129 @@ all_rawdata %>%
     geom_density() + theme(legend.position = "none") +
     ylim(0,6)
 ```
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  ggplot(aes(x=facing_angle__rad,colour=unique_fly)) +
+    geom_density() + theme(legend.position = "none") +
+    ylim(0,6)
+```
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  ggplot(aes(x=Frame,y=facing_angle__rad,colour=unique_fly)) +
+    geom_point() + theme(legend.position = "none") #+
+    #ylim(0,6)
+```
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  ggplot(aes(x=Frame,y=dist_to_other__mm,colour=unique_fly)) +
+    geom_point() + theme(legend.position = "none") #+
+    #ylim(0,6)
+```
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  filter(SmoothedCopulation == 0) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  ggplot(aes(x=facing_angle__rad,colour=unique_fly)) +
+    geom_density() + theme(legend.position = "none") +
+    ylim(0,6)
+```
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  filter(Frame < 5000) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  ggplot(aes(x=facing_angle__rad,colour=unique_fly)) +
+    geom_density() + theme(legend.position = "none") +
+    ylim(0,6)
+```
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  ggplot(aes(x=Frame,y=dist_to_other__mm)) +
+    geom_point(aes(colour=c(ifelse(SmoothedDistToOther>0.5,"not copulating","copulating"))))+
+    geom_point(aes(y=c(ifelse(SmoothedCopulation==1,SmoothedCopulation+6,NA))))+
+    geom_point(aes(y=c(ifelse(Copulation==1,Copulation+7,NA))))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(genotype == "A") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  unite("individual", FileName:Id, remove = FALSE) %>% 
+  summarise(id = unique(unique_fly),
+            facing = mean(facing_angle__rad))  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(genotype == "B") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  unite("individual", FileName:Id, remove = FALSE) %>% 
+  ggplot(aes(x=facing_angle__rad,colour=individual)) +
+    geom_density() + theme(legend.position = "none") +
+    ylim(0,6)
+```
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(genotype == "C") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(max_wing_ang__rad > (25*pi/180)) %>%
+  unite("individual", FileName:Id, remove = FALSE) %>% 
+  ggplot(aes(x=facing_angle__rad,colour=individual)) +
+    geom_density() + theme(legend.position = "none") +
+    ylim(0,6)
+```
+
 
 
 <br/>
@@ -1076,6 +1212,7 @@ all_rawdata %>%
 
 
 
+### **Distance to wall**
 
 
 
@@ -1116,6 +1253,188 @@ all_rawdata %>%
     ylim(0,2.2) +
     xlim(0,10)
 ```
+
+
+
+
+<br/>
+<br/>
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+p1 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
+  group_by(genotype) %>% 
+  group_by(unique_fly) %>% 
+  summarise(genotype = unique(genotype),
+            mean_dist_to_wall_mm = mean(dist_to_wall__mm[which.max(SmoothedCourtship):ifelse(which.max(SmoothedCopulation) > which.max(SmoothedCourtship),
+                                                                                 ifelse(which.max(SmoothedCopulation) <= (which.max(SmoothedCourtship)+(25*600)), 
+                                                                                        which.max(SmoothedCopulation), 
+                                                                                        (which.max(SmoothedCourtship)+(25*600))),
+                                                                                  (which.max(SmoothedCourtship)+(25*600))
+                                                                                  )
+                                             ]
+                                 )
+            ) %>% 
+  ggplot(aes(x=genotype,y=mean_dist_to_wall_mm)) +
+    geom_boxplot()
+p2 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
+  group_by(genotype) %>% 
+  group_by(unique_fly) %>% 
+  summarise(genotype = unique(genotype),
+            median_dist_to_wall_mm = median(dist_to_wall__mm[which.max(SmoothedCourtship):ifelse(which.max(SmoothedCopulation) > which.max(SmoothedCourtship),
+                                                                                 ifelse(which.max(SmoothedCopulation) <= (which.max(SmoothedCourtship)+(25*600)), 
+                                                                                        which.max(SmoothedCopulation), 
+                                                                                        (which.max(SmoothedCourtship)+(25*600))),
+                                                                                  (which.max(SmoothedCourtship)+(25*600))
+                                                                                  )
+                                             ]
+                                 )
+            ) %>% 
+  ggplot(aes(x=genotype,y=median_dist_to_wall_mm)) +
+    geom_boxplot()
+p3 <- all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
+  group_by(genotype) %>% 
+  group_by(unique_fly) %>% 
+  summarise(genotype = unique(genotype),
+            prop_dist_to_wall_lt_1 = 100*sum(dist_to_wall__mm[which.max(SmoothedCourtship):ifelse(which.max(SmoothedCopulation) > which.max(SmoothedCourtship),
+                                                                                 ifelse(which.max(SmoothedCopulation) <= (which.max(SmoothedCourtship)+(25*600)), 
+                                                                                        which.max(SmoothedCopulation), 
+                                                                                        (which.max(SmoothedCourtship)+(25*600))),
+                                                                                  (which.max(SmoothedCourtship)+(25*600))
+                                                                                  )
+                                             ]<1,
+                                 na.rm = TRUE)/
+              length(Frame[which.max(SmoothedCourtship):ifelse(which.max(SmoothedCopulation) > which.max(SmoothedCourtship),
+                                                                                 ifelse(which.max(SmoothedCopulation) <= (which.max(SmoothedCourtship)+(25*600)), 
+                                                                                        which.max(SmoothedCopulation), 
+                                                                                        (which.max(SmoothedCourtship)+(25*600))),
+                                                                                  (which.max(SmoothedCourtship)+(25*600))
+                                                                                  )
+                                             ]
+                     )) %>% 
+  ggplot(aes(x=genotype,y=prop_dist_to_wall_lt_1)) +
+    geom_boxplot()
+ggarrange(plotlist = list(p1,p2,p3),
+          labels = c("Mean Distance to Wall",
+                     "Median Distance to Wall",
+                     "Prop Time Close to Wall"),
+          hjust = -0.2,
+          ncol = 3,
+          nrow = 1)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+all_rawdata %>% 
+  filter(genotype != "CS female") %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  group_by(genotype) %>% 
+  group_by(unique_fly) %>% 
+  ggplot(aes(x=pos_x__px,y=pos_y__px)) +
+    geom_point()
+```
+
+
+
+
+
+
+```{r}
+all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  ggplot(aes(x=pos_x__px,y=pos_y__px)) +
+    geom_point() +
+    coord_fixed()
+```
+
+
+
+
+
+```{r}
+all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_wall__mm > 1) %>% 
+  ggplot(aes(x=pos_x__px,y=pos_y__px)) +
+    geom_point() +
+    coord_fixed()
+```
+
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+p1 <- all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  #filter(dist_to_other__mm > 2) %>% 
+  #filter(dist_to_wall__mm > 1) %>% 
+  ggplot(aes(x=genotype,y=dist_to_wall__mm)) +
+    geom_boxplot() +
+  ylim(0,10)
+p2 <- all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  #filter(dist_to_wall__mm > 1) %>% 
+  ggplot(aes(x=genotype,y=dist_to_wall__mm)) +
+    geom_boxplot() +
+  ylim(0,10)
+p3 <- all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  #filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_wall__mm > 1) %>% 
+  ggplot(aes(x=genotype,y=dist_to_wall__mm)) +
+    geom_boxplot() +
+  ylim(0,10)
+p4 <- all_rawdata %>% 
+  filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
+  filter(Id == 36) %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_wall__mm > 1) %>% 
+  ggplot(aes(x=genotype,y=dist_to_wall__mm)) +
+    geom_boxplot() +
+  ylim(0,10)
+ggarrange(plotlist = list(p1,p2,p3,p4),
+          labels = c("all frames",
+                     "non cop frames",
+                     "gt 1mm from wall",
+                     "non cop, gt 1mm"),
+          hjust = -0.4,
+          ncol = 4,
+          nrow = 1)
+
+```
+
+
+
+
 
 
 
@@ -1356,7 +1675,7 @@ p3 <- all_rawdata %>%
     ylim(0,10)
 ggarrange(plotlist = list(p1,p2,p3),
           labels = c("All Frames","Wing Extension Frames","Non-Wing Extension Frames"),
-          #hjust = 1,
+          hjust = -0.4,
           ncol = 3,
           nrow = 1)
 
@@ -2706,6 +3025,8 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 #### Total count in inner ring
 
+
+
 ```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
@@ -2743,6 +3064,7 @@ ggarrange(plotlist = list(p1,p2),
           nrow = 1)
 
 ```
+
 
 
 
@@ -3242,6 +3564,17 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
 ```{r}
 test_stat_tibble <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
@@ -3413,10 +3746,9 @@ all_rawdata %>%
                                                                                   )
                                              ])>15*pi/180)
             ) %>% 
-  summarise(prop_min_wing_gt_15 = 100*sum(min_wing_gt_15>0,na.rm = TRUE)/length(min_wing_gt_15))
+  summarise(tot_min_wing_gt_15 = sum(min_wing_gt_15>0,na.rm = TRUE),
+            prop_min_wing_gt_15 = 100*sum(min_wing_gt_15>0,na.rm = TRUE)/length(min_wing_gt_15))
 ```
-
-
 
 
 
@@ -3651,6 +3983,115 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
           ncol = 2,
           nrow = 2)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+p1 <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad > (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad < (0)) %>%
+  filter(wing_r_ang__rad > (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(min_wing_ang__rad > (15*pi/180)) %>%
+  filter(genotype == "A") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=wing_r_ang__rad, y=wing_r_len__px), bins = c(200,50)) +
+  geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p2 <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad > (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad < (0)) %>%
+  filter(wing_r_ang__rad > (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(min_wing_ang__rad > (15*pi/180)) %>%
+  filter(genotype == "B") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=wing_r_ang__rad, y=wing_r_len__px), bins = c(200,50)) +
+  geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p3 <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad > (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad < (0)) %>%
+  filter(wing_r_ang__rad > (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(min_wing_ang__rad > (15*pi/180)) %>%
+  filter(genotype == "C") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=wing_r_ang__rad, y=wing_r_len__px), bins = c(200,50)) +
+  geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p4 <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad > (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad < (0)) %>%
+  filter(wing_r_ang__rad > (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(min_wing_ang__rad > (15*pi/180)) %>%
+  filter(genotype == "D") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=wing_r_ang__rad, y=wing_r_len__px), bins = c(200,50)) +
+  geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+
+ggarrange(plotlist = list(p1,p2,p3,p4),
+          labels = c("A","B","C","D"),
+          #hjust = 1,
+          ncol = 2,
+          nrow = 2)
+```
+
+
+
+
+
+
+
+
 
 
 
