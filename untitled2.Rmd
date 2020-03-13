@@ -20,7 +20,7 @@ test <- all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test %>% 
   slice(which.max(SmoothedCourtship):which.max(SmoothedCopulation)) %>% 
   ggplot(aes(x=Frame)) +
@@ -73,7 +73,7 @@ calculate_xrel <- function(ori,xmale,xfemale,right_angle,left_angle,yrel,ppm){
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test %>% 
   slice(which.max(SmoothedCourtship):which.max(SmoothedCopulation)) %>% 
   ggplot(aes(x=Frame)) +
@@ -86,7 +86,7 @@ test %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test %>% 
   slice(which.max(SmoothedCourtship):which.max(SmoothedCopulation)) %>% 
   ggplot(aes(x=Frame)) +
@@ -96,7 +96,7 @@ test %>%
 ```
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test %>% 
   slice(which.max(SmoothedCourtship):which.max(SmoothedCopulation)) %>% 
   ggplot(aes(x=Frame)) +
@@ -238,7 +238,7 @@ new_data %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- new_data %>% 
   filter(genotype!="CS female") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -414,7 +414,7 @@ temp2 %>%
 ```
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=18, fig.height=18}
+```{r warning=FALSE, fig.width=18, fig.height=18}
 temp2 %>% 
   filter(genotype=="A") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -448,7 +448,7 @@ temp2 %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- temp2 %>% 
   filter(genotype!="CS female") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -484,7 +484,7 @@ ggarrange(plotlist = list(p1,p2),
 ```
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- temp2 %>% 
   filter(genotype!="CS female") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -521,7 +521,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- temp2 %>% 
   filter(genotype!="CS female") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -560,7 +560,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=18, fig.height=18}
+```{r warning=FALSE, fig.width=18, fig.height=18}
 temp2 %>% 
   filter(genotype=="CS female") %>%
   filter(dist_to_other__mm > 2) %>% 
@@ -574,7 +574,7 @@ temp2 %>%
   coord_fixed()
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(sex=="female") %>%
   filter(treatment=="A") %>%
@@ -636,7 +636,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(sex=="female") %>%
   filter(treatment=="A") %>%
@@ -704,7 +704,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 #### Proportion time in sector and within 10mm
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(sex == "female") %>% 
   filter(!is.na(treatment)) %>% 
@@ -813,7 +813,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6,p7,p8),
 
 #### Proportion time in sector and within 10mm
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(sex == "female") %>% 
   filter(!is.na(treatment)) %>% 
@@ -869,7 +869,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>%
@@ -887,7 +887,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>%
@@ -909,7 +909,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6") %>% 
   filter(Id == 17) %>%
@@ -927,7 +927,7 @@ colour=c(ifelse(rollavg_dist_to_other>2.5,gg_color_hue(2)[2],gg_color_hue(2)[1])
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6") %>% 
   filter(Id == 17) %>%
@@ -942,7 +942,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>%
@@ -966,7 +966,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 27) %>% 
@@ -985,7 +985,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6") %>% 
   filter(Id == 17) %>%
@@ -1005,7 +1005,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 29) %>% 

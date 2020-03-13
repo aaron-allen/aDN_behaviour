@@ -82,7 +82,7 @@ arena_treatment
 
 
 
-```{r message=FALSE, echo=FALSE, warning=FALSE}
+```{r warning=FALSE}
 # rawdata_list <- list.files("../",recursive = TRUE) %>% str_subset("_ALLDATA.csv") %>% str_subset("_Male_")
 # all_rawdata <- tibble()
 # for (rawdata_file in rawdata_list) {
@@ -103,7 +103,7 @@ arena_treatment
 
 ```{r}
 all_rawdata <- read_csv("all_rawdata.csv")
-all_rawdata <- all_rawdata %>% select(-genotype)
+#all_rawdata <- all_rawdata %>% select(-genotype)
 all_rawdata
 ```
 
@@ -234,6 +234,13 @@ all_rawdata[is.na(all_rawdata$treatment),]
 unique(all_rawdata$unique_fly[is.na(all_rawdata$treatment)])
 ```
 
+Megan says through out these individuals from video 1234_2 arena 5 and video 1234_9 arena 16
+
+
+
+```{r}
+
+```
 
 
 
@@ -305,7 +312,8 @@ write_csv(all_rawdata,"all_rawdata.csv")
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+
+```{r warning=FALSE, fig.width=16, fig.height=8}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
@@ -428,7 +436,7 @@ ggarrange(plotlist = list(p1,p4,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
@@ -585,7 +593,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 wing_thresh <- 15
 wind <- 600
 p1 <- all_rawdata %>% 
@@ -734,7 +742,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 wing_thresh <- 15
 wind <- 600
 p1 <- all_rawdata %>% 
@@ -1016,7 +1024,7 @@ all_rawdata
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 
 
 p1 <- all_rawdata %>% 
@@ -1206,7 +1214,7 @@ ggarrange(plotlist = list(p1,p3,p2,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
   filter(max_wing_ang__rad > (15*pi/180)) %>% 
@@ -1344,7 +1352,7 @@ ggarrange(plotlist = list(p1,p3,p2,p4,p5),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
   filter(max_wing_ang__rad > (15*pi/180)) %>% 
@@ -1482,23 +1490,6 @@ ggarrange(plotlist = list(p1,p3,p2,p4,p5),
 
 
 
-```{r}
-all_rawdata <- all_rawdata %>% 
-  mutate(ipsi_wing_ang = if_else(((wing_l_ang__rad<(-15*pi/180) & 
-                                rel_x_abs_corr_other<=0) | 
-                               (wing_r_ang__rad>(15*pi/180) & 
-                                  rel_x_abs_corr_other>=0)),1,0),
-         contra_wing = if_else(((wing_l_ang__rad<(-15*pi/180) & 
-                                rel_x_abs_corr_other>0) | 
-                               (wing_r_ang__rad>(15*pi/180) & 
-                                  rel_x_abs_corr_other<0)),1,0)
-         ) %>% 
-  replace_na(list(ipsi_wing = 0)) %>%
-  replace_na(list(contra_wing = 0))
-all_rawdata
-```
-
-
 
 
 
@@ -1525,7 +1516,7 @@ all_rawdata
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
@@ -1676,7 +1667,7 @@ ggarrange(plotlist = list(p1,p3,p2,p4,p5),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS") %>% 
@@ -1840,7 +1831,7 @@ all_rawdata
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 temp <- all_rawdata %>% 
   filter(dist_to_other__mm > 2.5) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1908,7 +1899,7 @@ rm(temp)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 temp <- all_rawdata %>% 
   filter(dist_to_other__mm > 2.5) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -1988,6 +1979,70 @@ rm(temp)
 
 
 
+```{r warning=FALSE, fig.width=12, fig.height=12}
+temp <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2.5) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad >= (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad <= (0)) %>%
+  filter(wing_r_ang__rad >= (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(max_wing_ang__rad > (15*pi/180)) 
+
+  
+  
+p1 <- temp %>%
+  filter(genotype == "A") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(10,1000),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p2 <- temp %>%
+  filter(genotype == "B") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(10,1000),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p3 <- temp %>%
+  filter(genotype == "C") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(10,1000),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p4 <- temp %>%
+  filter(genotype == "D") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(10,1000),na.value = "white") +
+  theme_void() +
+  coord_polar()
+
+ggarrange(plotlist = list(p1,p2,p3,p4),
+          labels = c("A","B","C","D"),
+          #hjust = 1,
+          ncol = 2,
+          nrow = 2)
+
+rm(temp)
+```
 
 
 
@@ -2002,6 +2057,74 @@ rm(temp)
 
 
 
+
+
+
+
+```{r warning=FALSE, fig.width=12, fig.height=12}
+temp <- all_rawdata %>% 
+  filter(dist_to_other__mm > 2.5) %>% 
+  filter(dist_to_other__mm < 10) %>% 
+  filter(max_wing_ang__rad < (2*pi/3)) %>%
+  filter(min_wing_ang__rad >= (0)) %>%
+  filter(wing_l_ang__rad > (-2*pi/3)) %>%
+  filter(wing_r_ang__rad < (2*pi/3)) %>%
+  filter(wing_l_ang__rad <= (0)) %>%
+  filter(wing_r_ang__rad >= (0)) %>%
+  filter(dist_to_wall__mm > 2) %>%
+  filter(min_wing_ang__rad > (15*pi/180)) 
+
+  
+  
+p1 <- temp %>%
+  filter(genotype == "A") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p2 <- temp %>%
+  filter(genotype == "B") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p3 <- temp %>%
+  filter(genotype == "C") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+p4 <- temp %>%
+  filter(genotype == "D") %>% 
+  ggplot() +
+  geom_bin2d(aes(x=abs(ipsi_wing_ang), y=ipsi_wing_len), bins = c(200,50)) +
+  geom_bin2d(aes(x=-abs(contra_wing_ang), y=contra_wing_len), bins = c(200,50)) +
+  xlim(-pi,pi) +
+  ylim(0,60) + 
+  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  theme_void() +
+  coord_polar()
+
+ggarrange(plotlist = list(p1,p2,p3,p4),
+          labels = c("A","B","C","D"),
+          #hjust = 1,
+          ncol = 2,
+          nrow = 2)
+
+rm(temp)
+```
 
 
 

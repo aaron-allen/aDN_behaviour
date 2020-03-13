@@ -285,7 +285,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6,
 
 
 
-```{r message=FALSE, echo=FALSE, warning=FALSE}
+```{r  warning=FALSE}
 rawdata_list <- list.files("../",recursive = TRUE) %>% str_subset("_ALLDATA.csv") %>% str_subset("_Male_")
 all_rawdata <- tibble()
 for (rawdata_file in rawdata_list) {
@@ -316,7 +316,7 @@ all_rawdata
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -336,7 +336,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -354,7 +354,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -388,7 +388,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -406,7 +406,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "B") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -424,7 +424,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "C") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -441,7 +441,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -458,7 +458,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -475,7 +475,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -492,7 +492,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -509,7 +509,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -522,7 +522,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -532,7 +532,7 @@ all_rawdata %>%
     ylim(0,6)
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -542,7 +542,7 @@ all_rawdata %>%
     #ylim(0,6)
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -554,7 +554,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
   filter(SmoothedCopulation == 0) %>% 
@@ -565,7 +565,7 @@ all_rawdata %>%
 ```
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
   filter(Frame < 5000) %>% 
@@ -575,9 +575,21 @@ all_rawdata %>%
     ylim(0,6)
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6_17") %>% 
+  ggplot(aes(x=Frame,y=dist_to_other__mm)) +
+    geom_point(aes(colour=c(ifelse(SmoothedDistToOther>0.5,"not copulating","copulating"))))+
+    geom_point(aes(y=c(ifelse(SmoothedCopulation==1,SmoothedCopulation+6,NA))))+
+    geom_point(aes(y=c(ifelse(Copulation==1,Copulation+7,NA))))
+```
+
+
+
+
+```{r warning=FALSE,  fig.width=16, fig.height=4}
+all_rawdata %>% 
+  filter(unique_fly == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_9_39") %>% 
   ggplot(aes(x=Frame,y=dist_to_other__mm)) +
     geom_point(aes(colour=c(ifelse(SmoothedDistToOther>0.5,"not copulating","copulating"))))+
     geom_point(aes(y=c(ifelse(SmoothedCopulation==1,SmoothedCopulation+6,NA))))+
@@ -592,12 +604,7 @@ all_rawdata %>%
 
 
 
-
-
-
-
-
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -620,7 +627,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "B") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -631,7 +638,7 @@ all_rawdata %>%
     ylim(0,6)
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "C") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -651,7 +658,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -671,7 +678,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -690,7 +697,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -710,7 +717,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Arena == 2) %>% 
@@ -726,7 +733,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -752,7 +759,7 @@ all_rawdata %>%
 
 ### D genotype distance to other
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 27) %>% 
@@ -768,7 +775,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 29) %>% 
@@ -783,7 +790,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -799,7 +806,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>% 
@@ -850,7 +857,7 @@ all_rawdata <- all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>% 
@@ -865,7 +872,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>% 
@@ -883,7 +890,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -901,7 +908,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -921,7 +928,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -939,7 +946,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -965,7 +972,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -982,7 +989,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -998,7 +1005,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -1016,7 +1023,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE,  fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 3) %>% 
@@ -1059,7 +1066,7 @@ all_rawdata %>%
 
 ### D genotype distance to other
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 27) %>% 
@@ -1075,7 +1082,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 29) %>% 
@@ -1089,7 +1096,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 35) %>% 
@@ -1105,7 +1112,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 37) %>% 
@@ -1148,7 +1155,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1169,7 +1176,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1187,7 +1194,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1220,7 +1227,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1242,7 +1249,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1262,7 +1269,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1345,7 +1352,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1388,7 +1395,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>% 
@@ -1472,7 +1479,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "A") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1493,7 +1500,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "B") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1512,7 +1519,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "C") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1534,7 +1541,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(genotype == "D") %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1555,7 +1562,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   group_by(genotype) %>% 
   filter(dist_to_other__mm > 2) %>% 
@@ -1579,7 +1586,7 @@ all_rawdata %>%
 
 ### **mean distance to other**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1636,7 +1643,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 ### **median distance to other**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1699,7 +1706,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 ### **mean facing angle** 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1767,7 +1774,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1819,7 +1826,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -1906,7 +1913,7 @@ TukeyHSD(aov0)
 ### **median facing angle by sector**
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2005,7 +2012,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 ### **mean facing angle by sector**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2106,7 +2113,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 ### **mean facing angle by wee sectors**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2221,7 +2228,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 
 ### **counts in wee sectors**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2330,7 +2337,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4,p5,p6),
 #### **Total time in sector**
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2379,7 +2386,7 @@ ggarrange(plotlist = list(p1,p2),
 
 #### **Proportion time in sector**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2461,7 +2468,7 @@ pairwise.t.test(test_stat_tibble0$counts, test_stat_tibble0$genotype)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(max_wing_ang__rad > (25*pi/180)) %>%
@@ -2529,7 +2536,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 #### Total time in sector
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2580,7 +2587,7 @@ ggarrange(plotlist = list(p1,p2),
 
 #### Proportion time in sector and within 10mm
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=8}
+```{r warning=FALSE, fig.width=12, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -2656,7 +2663,7 @@ pairwise.t.test(test_stat_tibble0$counts, test_stat_tibble0$genotype)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -2724,7 +2731,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -2791,7 +2798,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -2862,7 +2869,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -2952,7 +2959,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -3027,7 +3034,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -3078,7 +3085,7 @@ ggarrange(plotlist = list(p1,p2),
 
 #### Proportion count in inner ring
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -3166,7 +3173,7 @@ TukeyHSD(aov0)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -3231,7 +3238,7 @@ ggarrange(plotlist = list(p1,p2),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=10, fig.height=8}
+```{r warning=FALSE, fig.width=10, fig.height=8}
 all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -3293,7 +3300,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=10, fig.height=10}
+```{r warning=FALSE, fig.width=10, fig.height=10}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
@@ -3448,7 +3455,7 @@ TukeyHSD(aov1)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
@@ -3615,7 +3622,7 @@ TukeyHSD(aov1)
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 wind <- 600
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
@@ -3772,7 +3779,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -3842,7 +3849,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -3923,7 +3930,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -3996,7 +4003,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -4014,7 +4021,7 @@ p1 <- all_rawdata %>%
   geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
   xlim(-pi,pi) +
   ylim(0,60) + 
-  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  scale_fill_continuous(type = "viridis",limits = c(10,500),na.value = "white") +
   theme_void() +
   coord_polar()
 p2 <- all_rawdata %>% 
@@ -4034,7 +4041,7 @@ p2 <- all_rawdata %>%
   geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
   xlim(-pi,pi) +
   ylim(0,60) + 
-  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  scale_fill_continuous(type = "viridis",limits = c(10,500),na.value = "white") +
   theme_void() +
   coord_polar()
 p3 <- all_rawdata %>% 
@@ -4054,7 +4061,7 @@ p3 <- all_rawdata %>%
   geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
   xlim(-pi,pi) +
   ylim(0,60) + 
-  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  scale_fill_continuous(type = "viridis",limits = c(10,500),na.value = "white") +
   theme_void() +
   coord_polar()
 p4 <- all_rawdata %>% 
@@ -4074,7 +4081,7 @@ p4 <- all_rawdata %>%
   geom_bin2d(aes(x=wing_l_ang__rad, y=wing_l_len__px), bins = c(200,50)) +
   xlim(-pi,pi) +
   ylim(0,60) + 
-  scale_fill_continuous(type = "viridis",limits = c(0,500),na.value = "white") +
+  scale_fill_continuous(type = "viridis",limits = c(10,500),na.value = "white") +
   theme_void() +
   coord_polar()
 
@@ -4105,7 +4112,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=12}
+```{r warning=FALSE, fig.width=12, fig.height=12}
 p1 <- all_rawdata %>% 
   filter(dist_to_other__mm > 2) %>% 
   filter(dist_to_other__mm < 10) %>% 
@@ -4261,7 +4268,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>%
@@ -4283,7 +4290,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_6") %>% 
   filter(Id == 7) %>%
@@ -4309,7 +4316,7 @@ all_rawdata %>%
 <br/>
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 5) %>%
@@ -4395,7 +4402,7 @@ facing_start_and_end_wing
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_start)) +
   geom_boxplot()
 p2 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_end)) +
@@ -4420,7 +4427,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_start-facing_at_end)) +
   geom_boxplot()+
   ylim(-0.5,0.5)
@@ -4451,7 +4458,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_start)) +
   geom_violin()
 p2 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_end)) +
@@ -4523,7 +4530,7 @@ facing_start_and_end_wing
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=6}
+```{r warning=FALSE, fig.width=12, fig.height=6}
 p1 <- ggplot(facing_start_and_end_wing, aes(x=genotype,y=facing_at_start)) +
   geom_boxplot() +
   ylim(0,1)
@@ -4593,7 +4600,7 @@ facing_start_and_end_wing
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype!="CS female") %>% 
   group_by(unique_fly) %>% 
@@ -4677,7 +4684,7 @@ facing_start_and_end_wing
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=8}
+```{r warning=FALSE, fig.width=16, fig.height=8}
 p1 <- all_rawdata %>% 
   filter(genotype!="CS female") %>% 
   group_by(unique_fly) %>% 
@@ -4727,7 +4734,7 @@ ggarrange(plotlist = list(p1,p2,p3,p4),
 
 ### **Facing angles with wing extended using WingGesture**
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype!="CS female") %>% 
   group_by(unique_fly) %>% 
@@ -4779,7 +4786,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 ### **Facing angles with wing extended using max_wing>35**
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 p1 <- all_rawdata %>% 
   filter(genotype!="CS female") %>% 
   group_by(unique_fly) %>% 
@@ -4937,7 +4944,7 @@ bouts
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test <- all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) 
@@ -4963,7 +4970,7 @@ sum(test$bin_max_wing[which.max(test$SmoothedCourtship):which.max(test$SmoothedC
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 test <- all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_123_3") %>% 
   filter(Id == 1) 
@@ -4987,7 +4994,7 @@ gg_color_hue(4)
 ```
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 test <- all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_123_3") %>% 
   filter(Id == 1) %>% 
@@ -5087,7 +5094,7 @@ bouts
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_123_3") %>% 
   filter(Id == 21) %>% 
@@ -5107,7 +5114,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>%
@@ -5120,7 +5127,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>%
@@ -5131,7 +5138,7 @@ all_rawdata %>%
     geom_point(aes(y=c(ifelse(WingGesture==1,WingGesture+0.6,WingGesture-0.2))))
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>%
@@ -5144,7 +5151,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>% 
@@ -5157,7 +5164,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>% 
@@ -5169,7 +5176,7 @@ all_rawdata %>%
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=4}
+```{r warning=FALSE, fig.width=16, fig.height=4}
 all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_1234_2") %>% 
   filter(Id == 36) %>% 
@@ -5464,7 +5471,7 @@ courting_frames
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 test <- all_rawdata %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_123_3") %>% 
   filter(Id == 1) %>% 
@@ -5486,7 +5493,7 @@ test %>%
     ylim(-6,20)
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=16, fig.height=6}
+```{r warning=FALSE, fig.width=16, fig.height=6}
 test <- courting_frames %>% 
   filter(FileName == "Megan-2019_03_06_Courtship-DsxVglutTNT_Male_123_3") %>% 
   filter(Id == 1) #%>% 
@@ -5624,7 +5631,7 @@ calculate_indices <- function(input,feature,jaaba=TRUE,thresh=NULL){
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(unique_fly) %>% 
@@ -5656,7 +5663,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
@@ -5706,7 +5713,7 @@ ggarrange(plotlist = list(p1,p2,p3),
 
 
 
-```{r warning=FALSE, message=FALSE, echo=FALSE, fig.width=12, fig.height=4}
+```{r warning=FALSE, fig.width=12, fig.height=4}
 p1 <- all_rawdata %>% 
   filter(genotype != "CS female") %>% 
   group_by(genotype) %>% 
