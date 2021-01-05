@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 .RDataTmp
-all_rawdata.csv
+*.csv
+figures/

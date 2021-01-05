@@ -1,0 +1,947 @@
+---
+title: "**Male _CS_ courtship behaviour when paired with female aDN>TNT**"
+author: "Aaron M. Allen"
+date: "5th December 2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: readable
+    df_print: paged
+    fig_width: 8.5
+    fig_height: 5
+---
+
+
+```{r setup, echo = FALSE, cache = FALSE}
+knitr::opts_chunk$set(dev = c('png', 'cairo_pdf'), 
+                      fig.align = 'center', fig.height = 5, fig.width = 8.5, 
+                      pdf.options(encoding = "ISOLatin9.enc"),
+                      fig.path='figures/', warning=FALSE, message=FALSE)
+
+#options(width = 120)
+```
+
+
+# **Load packages**
+
+Loading in the packages that we'll need for the analysis.
+
+```{r}
+library(tidyverse)
+library(survminer)
+library(survival)
+library(data.table)
+library(ggpubr)
+library(zoo)
+library(ggbeeswarm)
+library(cowplot)
+```
+
+# **Load data**
+
+This first bit is a lot of data import and manipulation to get it already to plot the courtship features.
+
+
+
+First we'll load in the "key" tables with the genotypes, and do a little cleaning.
+
+```{r message=FALSE}
+genotypes <- read_csv("female_adn_ids.csv",col_names = TRUE)
+head(genotypes)
+```
+
+
+One pair of flies didnt' copulate after one hour.
+
+```{r}
+sum(is.na(genotypes$copulation_time))
+```
+
+Copulation times were deduced from an mp4 video, which starts before the tracking and so needs to be offset.
+
+```{r}
+video_offset <- read_csv("video_offset.csv",col_names = TRUE)
+head(video_offset)
+```
+
+
+```{r}
+genotypes <- left_join(genotypes,video_offset)
+genotypes <- genotypes %>% 
+  mutate(mp4_cop_time=copulation_time,
+        copulation_time=mp4_cop_time-offset)
+head(genotypes)
+```
+
+
+
+One fly had already started to copulate by the time the tracking started.
+
+```{r}
+sum(genotypes$copulation_time<0,na.rm = T)
+min(genotypes$copulation_time,na.rm = T)
+genotypes$copulation_time[genotypes$copulation_time<0] <- 0
+sum(genotypes$copulation_time<0,na.rm = T)
+```
+
+
+
+
+We also want to populate this table with the Id numbers for the matched females in each chamber. We are simply duplicating the `genotypes` table and if the male `fly_id` was odd, then we increment the female Id, and if the male `fly_id` was even then we decrement the Id. Finally we change the male genotype to "_CS_".
+
+```{r}
+genotypes <- genotypes %>% mutate(treatment = genotype)
+female_genotypes <- genotypes
+even_ids <- (genotypes$fly_id %% 2) == 0
+odd_ids <- (genotypes$fly_id %% 2) != 0
+female_genotypes$fly_id[even_ids] = female_genotypes$fly_id[even_ids] - 1
+female_genotypes$fly_id[odd_ids] = female_genotypes$fly_id[odd_ids] + 1
+genotypes$genotype <- "CS"
+head(female_genotypes)
+```
+
+
+
+Now we merge the male and female `genotypes` tables.
+
+
+```{r}
+all_genotypes <- bind_rows(genotypes,female_genotypes)
+all_genotypes <- all_genotypes %>% 
+  unite("uni_fly",video,fly_id,remove = FALSE)
+head(all_genotypes)
+```
+
+
+
+
+And now we can read in all the csv files with all the raw tracking and JAABA annotated behaviours.
+
+
+```{r}
+rawdata_list <- list.files("./",recursive = TRUE) %>% str_subset("_ALLDATA.csv")
+all_rawdata <- tibble()
+for (rawdata_file in rawdata_list) {
+  temp <- fread(input = paste0("./",rawdata_file), showProgress = FALSE)
+  all_rawdata <- bind_rows(all_rawdata,temp)
+}
+head(all_rawdata)
+```
+
+
+
+
+
+Define a few functions to compute the relative x and y postions of each fly in each chamber.
+
+```{r}
+# calculates relative y value based on data from feat.mat
+calculate_yrel <- function(theta,dist){
+  yrel=dist*cos(theta)
+  return(yrel)
+}
+calculate_xrel <- function(ori,xmale,xfemale,yrel,ppm=14.85){
+  xmale_mm=xmale/ppm
+  xfemale_mm=xfemale/ppm
+  xrel = (xfemale_mm - (cos(ori)*yrel+xmale_mm))/(sin(ori))
+  return(xrel)
+} 
+calculate_xrel_abs <- function(theta,dist){
+  xrel=dist*sin(theta)
+  return(xrel)
+}
+```
+
+
+
+
+And calculate those relative x and y positions.
+
+
+```{r}
+all_rawdata <- all_rawdata %>% 
+  arrange(FileName,Arena,Frame)
+
+all_rawdata$rel_y_other <- NA
+all_rawdata$rel_x_other <- NA
+all_rawdata$rel_x_abs_other <- NA
+all_rawdata$rel_x_abs_corr_other <- NA
+
+all_rawdata$rel_y_other[seq(1,nrow(all_rawdata),2)] = calculate_yrel(all_rawdata$facing_angle__rad[seq(1,nrow(all_rawdata),2)],
+                                                         all_rawdata$dist_to_other__mm[seq(1,nrow(all_rawdata),2)])
+
+all_rawdata$rel_x_other[seq(1,nrow(all_rawdata),2)] = calculate_xrel(ori = all_rawdata$ori__rad[seq(1,nrow(all_rawdata),2)],
+                                                         xmale = all_rawdata$pos_x__px[seq(1,nrow(all_rawdata),2)],
+                                                         xfemale = all_rawdata$pos_x__px[seq(2,nrow(all_rawdata),2)],
+                                                         yrel = calculate_yrel(all_rawdata$facing_angle__rad[seq(1,nrow(all_rawdata),2)],
+                                                                               all_rawdata$dist_to_other__mm[seq(1,nrow(all_rawdata),2)]))
+
+all_rawdata$rel_x_abs_other[seq(1,nrow(all_rawdata),2)] = calculate_xrel_abs(all_rawdata$facing_angle__rad[seq(1,nrow(all_rawdata),2)],
+                                                                 all_rawdata$dist_to_other__mm[seq(1,nrow(all_rawdata),2)])
+
+
+all_rawdata$rel_y_other[seq(2,nrow(all_rawdata),2)] = calculate_yrel(all_rawdata$facing_angle__rad[seq(2,nrow(all_rawdata),2)],
+                                                         all_rawdata$dist_to_other__mm[seq(2,nrow(all_rawdata),2)])
+
+all_rawdata$rel_x_other[seq(2,nrow(all_rawdata),2)] = calculate_xrel(ori = all_rawdata$ori__rad[seq(2,nrow(all_rawdata),2)],
+                                                         xmale = all_rawdata$pos_x__px[seq(2,nrow(all_rawdata),2)],
+                                                         xfemale = all_rawdata$pos_x__px[seq(1,nrow(all_rawdata),2)],
+                                                         yrel = calculate_yrel(all_rawdata$facing_angle__rad[seq(2,nrow(all_rawdata),2)],
+                                                                               all_rawdata$dist_to_other__mm[seq(2,nrow(all_rawdata),2)]))
+
+all_rawdata$rel_x_abs_other[seq(2,nrow(all_rawdata),2)] = calculate_xrel_abs(all_rawdata$facing_angle__rad[seq(2,nrow(all_rawdata),2)],
+                                                                 all_rawdata$dist_to_other__mm[seq(2,nrow(all_rawdata),2)])
+
+
+all_rawdata$rel_x_abs_corr_other[which(all_rawdata$rel_x_other<0)] = -all_rawdata$rel_x_abs_other[which(all_rawdata$rel_x_other<0)]
+all_rawdata$rel_x_abs_corr_other[which(all_rawdata$rel_x_other>0)] = all_rawdata$rel_x_abs_other[which(all_rawdata$rel_x_other>0)]
+
+head(all_rawdata)
+```
+
+
+
+Using the copulation frames from the `all_genotypes` table we can subset the raw tracking data to remove all copulatory frames. We are then left with the non-copulatory frames.
+
+
+
+```{r}
+all_rawdata <- all_rawdata %>%
+  unite("uni_fly",FileName,Id,remove = FALSE)
+
+non_cop_frames <- tibble()
+flies <- unique(all_genotypes$uni_fly)
+for (fly in flies) {
+  cop_time <- all_genotypes$copulation_time[all_genotypes$uni_fly==fly]
+  cop_time <- replace_na(cop_time,900)
+  cop_time <- cop_time*25
+  temp0 <- all_rawdata %>%
+    filter(uni_fly == fly) %>% 
+    slice(1:cop_time)
+  non_cop_frames <- bind_rows(non_cop_frames,temp0)
+}
+head(non_cop_frames)
+```
+
+
+Now we can join the genotype information from `all_genotypes` with the `non_cop_frames` table.
+
+
+```{r}
+non_cop_frames <- non_cop_frames %>%
+  full_join(x = non_cop_frames, y = all_genotypes, by = c("uni_fly"="uni_fly")) %>% 
+  select(-StartPosition) %>% 
+  select(-copulation_time) %>% 
+  select(-offset) %>% 
+  select(-mp4_cop_time) %>% 
+  select(-fly_id) %>% 
+  select(-video) %>% 
+  mutate(sex = if_else(genotype == "CS","male","female"))
+head(non_cop_frames)
+```
+
+
+```{r}
+fwrite(non_cop_frames, file = "non_copulatory_frames.csv",col.names = TRUE)
+```
+
+
+We calculate the the courtship per-frame courtship features from the JAABA annotations.
+
+```{r}
+non_cop_frames <- non_cop_frames %>%  
+  group_by(uni_fly) %>% 
+  mutate(
+    Multitasking = (Approaching + Encircling + Contact + Turning + WingGesture),
+    MultitaskingWithFacing = (Approaching + Encircling + Facing + Contact + Turning + WingGesture),
+    Courtship = ifelse(Multitasking>=1, 1, 0),
+    CourtshipWithFacing = ifelse(MultitaskingWithFacing>=1, 1, 0),
+    MultitaskingWithCopulation = (Approaching + Encircling + Contact + Turning + WingGesture + Copulation),
+    MultitaskingWithCopulationWithFacing = (Approaching + Encircling + Facing + Contact + Turning + WingGesture + Copulation),
+    CourtshipAndCopulation = ifelse(MultitaskingWithCopulation>=1, 1, 0),
+    CourtshipAndCopulationWthFacing = ifelse(MultitaskingWithCopulationWithFacing>=1, 1, 0),
+    SmoothedCourtship = ifelse((rollmean(Courtship, 150, fill = c(0,0,0), align = c("left")))>0.5, 1, 0),
+    SmoothedCopulation = ifelse((rollmean(Copulation, 1250, fill = c(0,0,0), align = c("center")))>0.5, 1, 0)
+  )
+head(non_cop_frames)
+```
+
+
+```{r}
+fwrite(non_cop_frames, file = "non_copulatory_frames_with_summary_features.csv",col.names = TRUE)
+```
+
+Just double checking our column names.
+
+```{r}
+colnames(non_cop_frames)
+```
+
+
+Based on the per-frame courtship features we can now calculate the courtship initiation using the first instance of the `SmoothedCourthsip` parameter.
+
+
+```{r}
+start_of_courtship_frames <- non_cop_frames %>% 
+  filter(sex != "female") %>% 
+  summarise(FileName = unique(FileName),
+            Arena = unique(Arena),
+            Id = unique(Id),
+            genotype = unique(genotype),
+            treatment = unique(treatment),
+            start_of_courtship = which.max(SmoothedCourtship))
+head(start_of_courtship_frames)
+```
+
+
+
+
+
+As with the `all_genotypes` table, we doublicate the `start_of_courtship` table to get the corresponding values for the females.
+
+```{r}
+female_start_of_courtship_frames <- start_of_courtship_frames
+even_ids <- (start_of_courtship_frames$Id %% 2) == 0
+odd_ids <- (start_of_courtship_frames$Id %% 2) != 0
+female_start_of_courtship_frames$Id[even_ids] = female_start_of_courtship_frames$Id[even_ids] - 1
+female_start_of_courtship_frames$Id[odd_ids] = female_start_of_courtship_frames$Id[odd_ids] + 1
+female_start_of_courtship_frames$genotype <- female_start_of_courtship_frames$treatment
+head(female_start_of_courtship_frames)
+```
+
+
+
+And then merge them together.
+
+
+```{r}
+all_start_of_courtship_frames <- bind_rows(start_of_courtship_frames,female_start_of_courtship_frames)
+all_start_of_courtship_frames <- all_start_of_courtship_frames %>% 
+  ungroup() %>% 
+  select(-uni_fly) %>% 
+  unite("uni_fly", FileName, Id, remove = FALSE) %>% 
+  group_by(uni_fly)
+head(all_start_of_courtship_frames)
+```
+
+
+
+
+Now we can subset the `non_cop_frames` to remove the frames before courtship was initiated.
+
+
+```{r}
+courting_frames <- tibble()
+flies <- unique(all_start_of_courtship_frames$uni_fly)
+for (fly in flies) {
+  court_time <- all_start_of_courtship_frames$start_of_courtship[all_start_of_courtship_frames$uni_fly==fly]
+  temp0 <- non_cop_frames %>% filter(uni_fly == fly)
+  temp0 <- temp0 %>% slice(court_time:n())
+  courting_frames <- bind_rows(courting_frames,temp0)
+}
+head(courting_frames)
+```
+
+And we can calculate a few ipsi- v contra-lateral wing features.
+
+```{r}
+courting_frames <- courting_frames %>% 
+  mutate(ipsi_wing_ang = if_else(rel_x_abs_corr_other>0,
+                                 wing_r_ang__rad,
+                                 -wing_l_ang__rad),
+         contra_wing_ang = if_else(rel_x_abs_corr_other<0,
+                                 -wing_r_ang__rad,
+                                 wing_l_ang__rad)
+         )
+head(courting_frames)
+```
+
+
+
+```{r}
+courting_frames <- courting_frames %>% 
+  mutate(ipsi_contra_rel_x = if_else(ipsi_wing_ang >= abs(contra_wing_ang),
+                                 abs(rel_x_abs_corr_other),
+                                 -abs(rel_x_abs_corr_other))
+         )
+head(courting_frames)
+```
+
+
+
+
+
+Save the data.
+
+```{r}
+fwrite(courting_frames, file = "courting_frames_with_summary_features.csv",col.names = TRUE)
+```
+
+
+
+
+
+# **The Plots**
+
+
+And finally we can start plotting the data.
+
+First "port of call" is of course Courtship Index. And there isn't much of a visual difference.
+
+(the stats will follow, but first lets plot the data)
+
+And just a reminder of the genotypes:
+
+a = _Otd-FLP/+; dsx[Gal4.DBD]/+_ (n=29) 
+
+b = _VGlut[dVP16.AD], UAS>stop>TNT/+_ (n=19)
+
+c = _VGlut[dVP16.AD], UAS>stop>TNT/+; dsx[Gal4.DBD]/+_ (n=41)
+
+d = _VGlut[dVP16.AD], UAS>stop>TNT/Otd-FLP; dsx[Gal4.DBD]/+_ (n=46)
+
+
+
+```{r warning=F,message=F,fig.width=4,fig.height=4}
+indices <- courting_frames %>%
+  filter(sex != "female") %>% 
+  group_by(uni_fly) %>% 
+  summarise(genotype = unique(treatment),
+            CI = 100*sum(Courtship)/length(Frame),
+            CIwF = 100*sum(CourtshipWithFacing)/length(Frame),
+            approaching = 100*sum(Approaching)/length(Frame),
+            contact = 100*sum(Contact)/length(Frame),
+            circling = 100*sum(Encircling)/length(Frame),
+            facing = 100*sum(Facing)/length(Frame),
+            turning = 100*sum(Turning)/length(Frame),
+            wing = 100*sum(WingGesture)/length(Frame)
+            ) 
+
+indices %>% 
+    ggplot(aes(x=genotype,y=CIwF)) +
+    geom_boxplot(outlier.size = 0) +
+    geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+    ylim(0,100) +
+    ylab("Courtship Index (%)") + 
+    xlab("Genotype")
+```
+
+
+We can look at the individual courtship features to see what they look like. But as with CI, there doesn't look like there is any effect.
+
+```{r warning=F,message=F,fig.width=12,fig.height=8}
+p <- list()
+courtship_features <- c("approaching","facing","contact","circling","turning","wing")
+for (i in 1:length(courtship_features)) {
+    p[[i]] <- indices %>% 
+        ggplot(aes_string(x="genotype",y=courtship_features[i])) +
+        geom_boxplot(outlier.size = 0) +
+        geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+        #geom_quasirandom(method = "smiley",shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+        ylim(0,100) +
+        ylab(as.name(courtship_features[i])) + 
+        xlab("Genotype")
+}
+plot_grid(plotlist = p,ncol = 3)
+```
+
+
+
+
+There also doesn't look like much of an effect on courtship initiation.
+
+
+```{r warning=F,message=F,fig.width=4,fig.height=4}
+ggplot(start_of_courtship_frames,aes(x=treatment,y=start_of_courtship/1500)) +
+    geom_boxplot() +
+    ylim(0,10) +
+    geom_boxplot(outlier.size = 0) +
+    geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+    ylab("Courtship Initiation (min.)") + 
+    xlab("Genotype")
+```
+
+
+There also doesn't look like much of an effect on cumulative copulation.
+
+```{r fig.height=4, fig.width=6, message=F,warning=F}
+df <- genotypes %>% 
+  mutate(status = if_else(is.na(copulation_time),0,1))
+df$copulation_time <- replace_na(df$copulation_time,3600)
+df$copulation_time <- round(as.numeric(df$copulation_time)/60)
+fit <- survfit(Surv(copulation_time, status) ~ treatment, data = df)
+ggsurv <- ggsurvplot(
+            fit,        
+            data = df,
+            risk.table = TRUE, 
+            pval = FALSE, 
+            conf.int = TRUE, 
+            xlim = c(0,60),   
+            xlab = "Time in minutes", 
+            break.time.by = 10, 
+            risk.table.y.text.col = T,
+            risk.table.height = 0.25, 
+            risk.table.y.text = FALSE,
+            ncensor.plot = TRUE, 
+            ncensor.plot.height = 0.25,
+            fun = "event"
+        )
+ggsurv$plot 
+```
+
+
+Looking at the position of the female while the male has it's wing extended, also looks quite similar. Which is in contrast to the male aDN experiments. (_NB_: contralateral = left, ipsilateral = right, and the males postion is the centre)
+
+
+```{r warning=F,message=F,fig.width=16,fig.height=4}
+p <- list()
+treatment <- c("a","b","c","d")
+for (i in 1:length(treatment)) {
+    p[[i]] <- courting_frames %>% 
+                  filter(sex == "male") %>% 
+                  filter(treatment==treatment[i]) %>%
+                  filter(max_wing_ang__rad > (35*pi/180)) %>%
+                  ggplot(aes(x=ipsi_contra_rel_x,y=rel_y_other)) +
+                  geom_bin2d(bins = c(400,400)) +
+                  xlim(-20,20) +
+                  ylim(-20,20) + 
+                  scale_fill_continuous(limits = c(0,400),na.value = "white") +
+                  theme_void() +
+                  coord_fixed() +
+                  ggtitle(treatment[i])
+}
+plot_grid(plotlist = p,ncol = 4)
+```
+
+
+
+
+Here we write a little function to look at the probability density plots of a given feature with a mean trend line and 95% confidence intervals.
+
+
+```{r}
+mean_pd <- function(input,feature,low=0,high,wing=TRUE,wing_ang=NULL, n=512){
+  input <- input %>%
+    filter(sex != "female") %>% 
+    select(uni_fly,Frame,genotype,treatment,sex,feature, max_wing_ang__rad)
+  
+  output <- tibble()
+  flies <- unique(input$uni_fly)
+  for (fly in flies) {
+    temp0 <- input %>%
+      filter(uni_fly == fly) %>% 
+      do(
+        if(wing)
+          filter(., max_wing_ang__rad > wing_ang)
+        else
+          .
+      )
+    #message(dim(temp0)[1])
+    if(dim(temp0)[1]<100) next
+    
+    feat <- temp0[[feature]][!is.na(temp0[[feature]])]
+    den <- density(feat, from = low, to = high, n = n, na.rm = TRUE)
+    temp1 <- tibble()
+    temp1 <- tibble(uni_fly = rep(unique(temp0$uni_fly),length(den[["x"]])),
+                    sex = rep(unique(temp0$sex),length(den[["x"]])),
+                    genotype = rep(unique(temp0$genotype),length(den[["x"]])),
+                    treatment = rep(unique(temp0$treatment),length(den[["x"]])),
+                    x = den[["x"]],
+                    pd = den[["y"]])
+    output <- bind_rows(output,temp1)
+  }
+  return(output)
+}
+```
+
+
+
+
+And there isn't anything strikingly different in the density of facing angle.
+
+
+```{r warning=F,message=F,fig.width=6,fig.height=4}
+facing_den <- mean_pd(input = courting_frames,feature = "facing_angle__rad",low = 0,high = pi, wing = FALSE, n=50)
+facing_den %>%
+  filter(sex == "male") %>%
+  group_by(treatment,x) %>% 
+  summarise(y = mean(pd),
+            err = qt(0.95,df=length(pd)-1)*sd(pd)/sqrt(length(pd))) %>% 
+  ggplot(aes(x=x*180/pi, y=100*y*pi/180)) +
+  geom_line(aes(colour=treatment), size=1) +
+  geom_ribbon(aes(ymin=if_else(y-err<0,0,(y-err)*100*pi/180), ymax=(y+err)*100*pi/180, fill=genotype), alpha = 0.3) +
+  ylab("Density (%/deg.)") +
+  xlab("Facing angle (deg.)") +
+  ylim(0,6) +
+  xlim(0,180)
+```
+
+
+Or distance.
+
+```{r warning=F,message=F,fig.width=6,fig.height=4}
+distance_den <- mean_pd(input = courting_frames,feature = "dist_to_other__mm",low = 0,high = 20, wing = FALSE, n=50)
+distance_den %>%
+  filter(sex == "male") %>%
+  group_by(treatment,x) %>% 
+  summarise(y = mean(pd),
+            err = qt(0.95,df=length(pd)-1)*sd(pd)/sqrt(length(pd))) %>% 
+  ggplot(aes(x=x, y=y*100)) +
+  geom_line(aes(colour=treatment), size=1) +
+  geom_ribbon(aes(ymin=if_else(y-err<0,0,(y-err)*100), ymax=(y+err)*100, fill=genotype), alpha = 0.3) +
+  ylab("Density (%/mm)") +
+  xlab("Distance to other (mm)") +
+  ylim(0,60) +
+  xlim(0,20) 
+```
+
+
+
+
+When we quantify the mean facing angle, mean distance to other, and minimum distance to other there is no difference between the flies. 
+
+
+```{r warning=F,message=F,fig.width=12,fig.height=4}
+p <- list()
+p[[1]] <- courting_frames %>% 
+  filter(sex != "female") %>% 
+  group_by(uni_fly) %>%  
+  summarise(genotype = unique(treatment),
+            facing = mean(facing_angle__rad)
+  ) %>% 
+  ggplot(aes(x=genotype,y=facing*180/pi)) +
+  geom_boxplot() +
+  geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+  ylab("Mean Facing Angle (deg.)") +
+  ylim(0,180)
+p[[2]] <- courting_frames %>% 
+  filter(sex != "female") %>%
+  group_by(uni_fly) %>% 
+  summarise(mean_dist = mean(dist_to_other__mm),
+            genotype = unique(treatment)) %>% 
+  ggplot(aes(x=genotype, y=mean_dist)) +
+  geom_boxplot() +
+  geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+  ylab("Mean Distance to Other (mm)") +
+  ylim(0,15) 
+p[[3]] <- courting_frames %>% 
+  filter(sex != "female") %>% 
+  group_by(uni_fly) %>% 
+  summarise(min_dist = min(dist_to_other__mm),
+            genotype = unique(treatment)) %>% 
+  ggplot(aes(x=genotype, y=min_dist)) +
+  geom_boxplot() +
+  geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+  ylab("Min. Distance to Other (mm)") +
+  ylim(0,3) 
+p[[4]] <- courting_frames %>% 
+  filter(sex != "female") %>% 
+  group_by(genotype) %>% 
+  group_by(uni_fly) %>% 
+  summarise(genotype = unique(treatment),
+            both_wing_index = 100*sum(min_wing_ang__rad>(15*pi/180), na.rm = TRUE)/
+              length(Frame)
+  ) %>% 
+  ggplot(aes(x=genotype, y=both_wing_index)) +
+  geom_boxplot() +
+  geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+  ylab("Bilateral wing index (%)") +
+  ylim(0,100) 
+plot_grid(plotlist = p,ncol = 4)
+```
+
+
+
+
+There is no apparent difference in wing choice index ether.
+
+
+```{r warning=F,message=F,fig.width=4,fig.height=4}
+courting_frames %>% 
+  filter(sex != "female") %>% 
+  group_by(uni_fly) %>% 
+  summarise(genotype = unique(treatment),
+            wing_choice = (sum(abs(ipsi_wing_ang)>(35*pi/180),na.rm = T)-sum(abs(contra_wing_ang)>(35*pi/180),na.rm = T))/
+              (sum(abs(ipsi_wing_ang)>(35*pi/180),na.rm = T)+sum(abs(contra_wing_ang)>(35*pi/180),na.rm = T))
+  ) %>% 
+  ggplot(aes(x=genotype,y=wing_choice)) +
+  geom_boxplot() +
+  geom_beeswarm(shape = 21, colour = "black", fill = "white", size = 2, stroke = 1) +
+  ylab("Wing Choice Index") +
+  ylim(-1,1)
+```
+
+
+
+
+
+
+
+
+# **The Stats**
+
+
+
+First lets compute a summary table of the features.
+
+
+```{r}
+court_summary <- courting_frames %>% 
+  filter(sex!="female") %>% 
+  group_by(uni_fly) %>% 
+  summarise(genotype = unique(treatment),
+            initiation = min(Frame),
+            CI = 100*sum(CourtshipWithFacing)/length(Frame),
+            approaching = 100*sum(Approaching)/length(Frame),
+            contact = 100*sum(Contact)/length(Frame),
+            circling = 100*sum(Encircling)/length(Frame),
+            facing = 100*sum(Facing)/length(Frame),
+            turning = 100*sum(Turning)/length(Frame),
+            wing = 100*sum(WingGesture)/length(Frame),
+            time_behind = 100*sum(facing_angle__rad > (25*pi/180))/length(Frame),
+            mean_facing_angle = mean(facing_angle__rad),
+            mean_dist = mean(dist_to_other__mm),
+            min_dist = min(dist_to_other__mm),
+            bilateral_wing_index = 100*sum(min_wing_ang__rad>(15*pi/180), na.rm = TRUE)/length(Frame),
+            uni_wing_index = 100*sum((max_wing_ang__rad>(35*pi/180) & min_wing_ang__rad < (15*pi/180)), na.rm = TRUE)/length(Frame),
+            wing_choice = (sum(abs(ipsi_wing_ang)>(35*pi/180),na.rm = T)-sum(abs(contra_wing_ang)>(35*pi/180),na.rm = T))/
+              (sum(abs(ipsi_wing_ang)>(35*pi/180),na.rm = T)+sum(abs(contra_wing_ang)>(35*pi/180),na.rm = T)),
+            mean_min_wing = mean(min_wing_ang__rad)*180/pi
+            )
+
+
+temp <- courting_frames %>% 
+  filter(sex == "male")
+uniq_fly <- unique(temp$uni_fly)
+bi_wing_bouts <- tibble()
+for (fly in uniq_fly) {
+  temp2 <- temp %>% 
+    filter(uni_fly == fly) %>%
+    mutate(bin_bilateral_wing = if_else(min_wing_ang__rad>(15*pi/180),1,0)
+         )
+  temp2$bin_bilateral_wing <- temp2$bin_bilateral_wing %>% replace_na(0)
+  bilateral_wing_bouts <- rle(temp2[["bin_bilateral_wing"]])
+  temp3 <- tibble(uni_fly = fly,
+                  genotype = unique(temp2[["treatment"]]),
+                  bilateral_wing_bout_rate = 60*25*sum(bilateral_wing_bouts$values==1)/length(temp2[["Frame"]]),
+                  bilateral_wing_bout_length = mean(bilateral_wing_bouts$lengths[bilateral_wing_bouts$values==1])/25
+                  )
+  bi_wing_bouts <- bind_rows(bi_wing_bouts,temp3)
+}
+court_summary <- left_join(court_summary,bi_wing_bouts)
+head(court_summary)
+```
+
+
+
+
+
+And now we calculate a stats table and adjust for multiple comparisons/testing. Although not all the features were plotted above and calculating the stats for all the corresponding figures that we show for the in light experiments.
+
+
+```{r}
+features <- c("initiation","CI","mean_facing_angle","mean_dist","min_dist","bilateral_wing_index","bilateral_wing_bout_rate",
+              "approaching","facing","contact","circling","turning","wing",
+              "time_behind","uni_wing_index","bilateral_wing_bout_length","wing_choice")
+figures <- c("4a","4b","4g","4h","4i","4j","4k",
+             "s4a","s4b","s4c","s4d","s4e","s4f",
+             "s4g","s4h","s4i","s4j")
+all_pvals <- tibble()
+anova_values <- tibble()
+for (ii in 1:length(features)) {
+  aov <- aov(court_summary[[features[ii]]]~court_summary[["genotype"]])
+  temp_anova <- tibble(figure = figures[ii],
+                       feature = features[ii],
+                       df1 = summary(aov)[[1]][["Df"]][1],
+                       df2 = summary(aov)[[1]][["Df"]][2],
+                       fvalue = summary(aov)[[1]][["F value"]][1]
+                    )
+  anova_values <- bind_rows(anova_values,temp_anova)
+  if (summary(aov)[[1]][["Pr(>F)"]][[1]]<0.05) {
+    d_a <- t.test(court_summary[[features[ii]]][court_summary$genotype=="d"],court_summary[[features[ii]]][court_summary$genotype=="a"])
+    d_b <- t.test(court_summary[[features[ii]]][court_summary$genotype=="d"],court_summary[[features[ii]]][court_summary$genotype=="b"])
+    d_c <- t.test(court_summary[[features[ii]]][court_summary$genotype=="d"],court_summary[[features[ii]]][court_summary$genotype=="c"])
+    temp_pvals <- tibble(figure = figures[ii],
+                        feature = features[ii],
+                        comparison = c("anova", "d-a t.test", "d-b t.test", "d-c t.test"),
+                        pvals = c(summary(aov)[[1]][["Pr(>F)"]][[1]],d_a$p.value,d_b$p.value,d_c$p.value)
+                    )
+    all_pvals <- bind_rows(all_pvals,temp_pvals)
+  } else {
+      d_a <- NA
+      d_b <- NA
+      d_c <- NA
+      temp_pvals <- tibble(figure = figures[ii],
+                          feature = features[ii],
+                          comparison = c("anova", "d-a t.test", "d-b t.test", "d-c t.test"),
+                          pvals = c(summary(aov)[[1]][["Pr(>F)"]][[1]],NA,NA,NA)
+                      )
+      all_pvals <- bind_rows(all_pvals,temp_pvals)
+  }
+}
+
+res0 <- survdiff(formula = Surv(copulation_time, status) ~ treatment, data = df)
+res <- pairwise_survdiff(formula = Surv(copulation_time, status) ~ treatment, data = df, p.adjust.method = "none")
+temp_pvals <- tibble(figure = "4c",
+                     feature = "copulation",
+                     comparison = c("chisq", "d-a log-rank test", "d-b log-rank test", "d-c log-rank test"),
+                     pvals = c(1 - pchisq(res0$chisq, length(res0$n) - 1),res[["p.value"]][3,1],res[["p.value"]][3,2],res[["p.value"]][3,3])
+                      )
+all_pvals <- bind_rows(all_pvals,temp_pvals)
+
+a_pd <- distance_den %>% filter(treatment == "a") %>% group_by(x) %>% summarise(y = mean(pd))
+b_pd <- distance_den %>% filter(treatment == "b") %>% group_by(x) %>% summarise(y = mean(pd))
+c_pd <- distance_den %>% filter(treatment == "c") %>% group_by(x) %>% summarise(y = mean(pd))
+d_pd <- distance_den %>% filter(treatment == "d") %>% group_by(x) %>% summarise(y = mean(pd))
+d_a <- ks.test(d_pd$y, a_pd$y, exact = TRUE)
+d_b <- ks.test(d_pd$y, b_pd$y, exact = TRUE)
+d_c <- ks.test(d_pd$y, c_pd$y, exact = TRUE)
+
+temp_pvals <- tibble(figure = "4e",
+                     feature = "dist_to_other",
+                     comparison = c("d-a ks test", "d-b ks test", "d-c ks test"),
+                     pvals = c(d_a$p.value,d_b$p.value,d_c$p.value)
+                    )
+all_pvals <- bind_rows(all_pvals,temp_pvals)
+
+a_pd <- facing_den %>% filter(treatment == "a") %>% group_by(x) %>% summarise(y = mean(pd))
+b_pd <- facing_den %>% filter(treatment == "b") %>% group_by(x) %>% summarise(y = mean(pd))
+c_pd <- facing_den %>% filter(treatment == "c") %>% group_by(x) %>% summarise(y = mean(pd))
+d_pd <- facing_den %>% filter(treatment == "d") %>% group_by(x) %>% summarise(y = mean(pd))
+d_a <- ks.test(d_pd$y, a_pd$y, exact = TRUE)
+d_b <- ks.test(d_pd$y, b_pd$y, exact = TRUE)
+d_c <- ks.test(d_pd$y, c_pd$y, exact = TRUE)
+
+temp_pvals <- tibble(figure = "4d",
+                     feature = "facing_angle",
+                     comparison = c("d-a ks test", "d-b ks test", "d-c ks test"),
+                     pvals = c(d_a$p.value,d_b$p.value,d_c$p.value)
+                    )
+all_pvals <- bind_rows(all_pvals,temp_pvals)
+
+all_pvals <- all_pvals %>% 
+  mutate(p_adj = p.adjust(pvals,"holm"),
+         #sig = ifelse(p_adj<0.05,"y","n"),
+         sig_level = ifelse(p_adj>0.1,"ns",
+                            ifelse(p_adj>0.05,".",
+                                    ifelse(p_adj>0.01,"*",
+                                            ifelse(p_adj>0.001,"**",
+                                                    ifelse(p_adj>0.001,"***","****")
+                                                   )
+                                           )
+                                    )
+                            )
+         )
+all_pvals <- all_pvals %>% arrange(figure) 
+all_pvals
+```
+
+
+
+
+
+
+
+
+
+
+# **Session info**
+
+```{r session_info}
+sessionInfo()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
